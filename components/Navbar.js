@@ -48,9 +48,9 @@ export const Navbar = () => {
           }   w-full lg:inline-flex lg:flex-grow lg:w-auto`}
         >
           <div className='lg:inline-flex lg:flex-row lg:ml-auto lg:w-auto w-full lg:items-center items-start  flex flex-col lg:h-auto'>
-          <Link href='#'>
+          <Link href='/device'>
               <a className='lg:inline-flex lg:w-auto w-full  px-3 py-2 text-black  items-center justify-center  hover: text-[#64c297]'>
-                How the Carbon Rod Works
+                Our Device
               </a>
             </Link>
             <Link href='#'>

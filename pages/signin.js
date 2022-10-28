@@ -104,7 +104,7 @@ const signin = () => {
         // onClick={() => signInWithEmailAndPassword(email, password)}
         >Sign in</button>
         
-				<p class="mt-4 text-sm">Dont't have an account? <span class="underline cursor-pointer"> Sign In</span>
+				<p class="mt-4 text-sm">Dont't have an account? <span class="underline cursor-pointer"> Sign Up</span>
 				</p>
 			</div>
 		</div>

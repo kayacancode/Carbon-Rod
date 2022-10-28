@@ -8,6 +8,12 @@ import {
   Filler
 } from 'chart.js';
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth, db } from "../firebase";
+import { doc,collection,getDocs } from "firebase/firestore";
+
 ChartJS.register(
   LineElement,
   CategoryScale,
@@ -19,6 +25,30 @@ import { Line } from 'react-chartjs-2';
 import Link from 'next/link'
 
 const devicereadings = () => {
+   const iitUsers = doc(collection(db, "iit-team-users"));
+   const router = useRouter();
+   const [user, setUser] = useState(null);
+   const [teamList, setTeamList] = useState();
+
+   useEffect(() => {
+      async function fetchUsers() {
+        const iitDocRef = collection(db, "iit-team-users");
+  
+        const querySnapshot = await getDocs(iitDocRef);
+        const users = querySnapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            ...doc.data(),
+          
+           };
+        });
+  
+        setTeamList(users);
+        { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["CurrentCO2"]}
+      }
+      fetchUsers();
+    }, []);
+  
     const data ={
       labels: ["1985", "1990", "1995", "2000", "2010","2015", "2020"],
       datasets: [{
@@ -157,13 +187,15 @@ const devicereadings = () => {
            <main>
               <div class="pt-6 px-4">
                  <div class="w-full grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
-                 <h1 class="text-base font-normal   text-lg p-4 text-gray-500"> Device Reading < br/>
-Last reading from 10/6/2022 11:41 AM</h1>
+                 {/* <h1 class="text-base font-normal   text-lg p-4 text-gray-500"> Device Reading < br/>
+Last reading from 10/6/2022 11:41 AM</h1> */}
 <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8  2xl:col-span-2">
 
 <div class="flex items-center justify-between mb-4">
    <div class="flex-shrink-0">
-      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">414.89 ppm</span>
+      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+      { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["CurrentCO2"]} ppm
+      </span>
       <h3 class="text-base font-normal text-gray-500">Current CO2 Level</h3>
 
    </div>
@@ -172,8 +204,11 @@ Last reading from 10/6/2022 11:41 AM</h1>
 
 <div class="flex items-center justify-between mb-4">
    <div class="flex-shrink-0">
-      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">41.8349° N, 87.6270° W</span>
-      <h3 class="text-base font-normal text-gray-500">GPS Coordinates</h3>
+      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+      { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["ZipCode"]} 
+
+      </span>
+      <h3 class="text-base font-normal text-gray-500">Zipcode </h3>
 
    </div>
    
@@ -181,7 +216,10 @@ Last reading from 10/6/2022 11:41 AM</h1>
 
 <div class="flex items-center justify-between mb-4">
    <div class="flex-shrink-0">
-      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">7.0</span>
+      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+      { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["PHValue"]} 
+
+      </span>
       <h3 class="text-base font-normal text-gray-500">Soil PH </h3>
 
    </div>
@@ -189,7 +227,10 @@ Last reading from 10/6/2022 11:41 AM</h1>
 </div>
 <div class="flex items-center justify-between mb-4">
    <div class="flex-shrink-0">
-      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">30</span>
+      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+      { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["Nitrogen"]} 
+
+      </span>
       <h3 class="text-base font-normal text-gray-500">Nitrogen </h3>
 
    </div>
@@ -197,7 +238,10 @@ Last reading from 10/6/2022 11:41 AM</h1>
 </div>
 <div class="flex items-center justify-between mb-4">
    <div class="flex-shrink-0">
-      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">45.4</span>
+      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+      { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["Phosphorus"]} 
+
+      </span>
       <h3 class="text-base font-normal text-gray-500">Phosphorus </h3>
 
    </div>
@@ -205,8 +249,11 @@ Last reading from 10/6/2022 11:41 AM</h1>
 </div>
 <div class="flex items-center justify-between mb-4">
    <div class="flex-shrink-0">
-      <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">75</span>
+   <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+
+   { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["Potassium"]} 
       <h3 class="text-base font-normal text-gray-500">Potassium </h3>
+      </span>
 
    </div>
    
@@ -217,7 +264,9 @@ Last reading from 10/6/2022 11:41 AM</h1>
 
                        <div class="flex items-center justify-between mb-4">
                           <div class="flex-shrink-0">
-                             <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">American Elm</span>
+                             <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+                             Pseudotsuga douglasii
+                             </span>
                              <h3 class="text-base font-normal text-gray-500">Optimal Tree</h3>
 
                           </div>
@@ -226,7 +275,7 @@ Last reading from 10/6/2022 11:41 AM</h1>
 
                        <div class="flex items-center justify-between mb-4">
                           <div class="flex-shrink-0">
-                             <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">94.6lb/tree/year</span>
+                             <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">61 lbs/tree/year</span>
                              <h3 class="text-base font-normal text-gray-500">CO2 Sequestration potential</h3>
 
                           </div>
@@ -245,11 +294,16 @@ Last reading from 10/6/2022 11:41 AM</h1>
                        <div id="main-chart"></div>
                     </div>
                     
-                    <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
+                    <div class="bg-white shadow rounded-lg p-4 overflow-x-auto sm:p-6 xl:p-8 ">
                        <div class="mb-4 flex items-center justify-between">
                           <div>
                              <h3 class="text-xl font-bold text-gray-900 mb-2">Optimal Trees</h3>
-                             <span class="text-base font-normal text-gray-500">This is a list of other trees that you could plant</span>
+                             <span class="text-base font-normal text-gray-500">This is a list of other trees that you could plant</span> <br />
+                             <span class="text-base font-normal text-red-700 ">Please select a filter by local nurseries </span>
+                             <div class="flex items-center mb-4">
+                              <input checked id="checked-checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                              <label for="checked-checkbox" class="ml-2 text-sm font-medium text-black ">Show Nurseries</label>
+                           </div>
                           </div>
                           <div class="flex-shrink-0">
                              <a href="#" class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg p-2">View all</a>
@@ -266,147 +320,110 @@ Last reading from 10/6/2022 11:41 AM</h1>
                                                Tree Name
                                             </th>
                                             <th scope="col" class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                               Benefits
+                                               Current Year Benefits
+                                            </th>
+                                            <th scope="col" class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                               Benefits &gt; 60 years
                                             </th>
                                             
                                             <th scope="col" class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             CO2 Sequestration potential	
                                             </th>
+                                            
                                             <th scope="col" class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                               Hardness Zone
+                                            CO2 Sequestration Facts
                                             </th>
                                             <th scope="col" class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                               Tree Description
+                                               Tree Care
                                             </th>
                                          </tr>
                                       </thead>
                                       <tbody class="bg-white">
                                          <tr>
                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                            American Elm
+                                            Pseudotsuga douglasii                                            </td>
+                                            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
+                                            $16
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               $39.00
+                                            $32
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               14 pounds
+                                            3,709 pounds
+                                            </td>
+                                            
+                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                            How significant is this number? Most car owners of an "average" car (mid-sized sedan) drive 12,000 miles (19,312 kilometers) generating about 11,000 pounds (4,990 kilograms) of carbon dioxide (CO2) every year. A flight from New York to Los Angeles adds 1,400 pounds (635 kilograms) of CO2 per passenger. Trees can have an impact by reducing atmospheric carbon in two primary ways (see figure at left):
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                               7
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                            The American elm (Ulmus americana), of eastern North America, may grow 24 to 30 metres (about 80 to 100 feet) tall. It has dark gray, ridged bark and elliptical leaves. 
-
+                                            https://www.gardeningknowhow.com/ornamental/trees/elm/growing-elm-trees.htm
                                             </td>
                                          </tr>
                                          <tr class="bg-gray-50">
                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                            American Elm
+                                         { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["OptimalTrees"][1]} 
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               $39.00
+                                               $5
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               14 pounds
+                                            $12
+                                            </td>
+                                            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
+                                            709 pounds
+                                            </td>
+                                            
+                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                            Taxodium ascendens, also known as pond cypress, is a deciduous conifer of the genus Taxodium, native to North America
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                               7
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                            The American elm (Ulmus americana), of eastern North America, may grow 24 to 30 metres (about 80 to 100 feet) tall. It has dark gray, ridged bark and elliptical leaves. 
-
+                                            https://www.gardeningknowhow.com/ornamental/trees/elm/growing-elm-trees.htm
                                             </td>
                                          </tr>
                                          <tr>
                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                            American Elm
+                                         { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["OptimalTrees"][2]} 
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               $39.00
+                                               $3
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               14 pounds
+                                            $10
+                                            </td>
+                                            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
+                                            609 pounds
+                                            </td>
+                                            
+                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                            Quercus lobata, commonly called the valley oak or roble, grows into the largest of North American oaks. It is endemic to California, growing in interior valleys and foothills from Siskiyou County to San Diego County. Mature specimens may attain an age of up to 600 years
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                               7
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                            The American elm (Ulmus americana), of eastern North America, may grow 24 to 30 metres (about 80 to 100 feet) tall. It has dark gray, ridged bark and elliptical leaves. 
-
+                                            https://www.gardeningknowhow.com/ornamental/trees/elm/growing-elm-trees.htm
                                             </td>
                                          </tr>
                                          <tr class="bg-gray-50">
                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                            American Elm
+                                         { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["OptimalTrees"][3]} 
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               $39.00
+                                               $9
                                             </td>
                                             <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               14 pounds
+                                               $13
                                             </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                               7
+                                            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
+                                               132 pounds
                                             </td>
+                                            
                                             <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                            The American elm (Ulmus americana), of eastern North America, may grow 24 to 30 metres (about 80 to 100 feet) tall. It has dark gray, ridged bark and elliptical leaves. 
-
+                                            Quercus alba, the white oak, is one of the preeminent hardwoods of eastern and central North America. It is a long-lived oak, native to eastern and central North America and found from Minnesota, Ontario, Quebec, and southern Maine south as far as northern Florida and eastern Texas                                            </td>
+                                           
+                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                            https://www.gardeningknowhow.com/ornamental/trees/elm/growing-elm-trees.htm
                                             </td>
                                          </tr>
-                                         <tr>
-                                         <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                            American Elm
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               $39.00
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               14 pounds
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                               7
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                            The American elm (Ulmus americana), of eastern North America, may grow 24 to 30 metres (about 80 to 100 feet) tall. It has dark gray, ridged bark and elliptical leaves. 
-
-                                            </td>
-                                         </tr>
-                                         <tr class="bg-gray-50">
-                                         <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                            American Elm
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               $39.00
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               14 pounds
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                               7
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                            The American elm (Ulmus americana), of eastern North America, may grow 24 to 30 metres (about 80 to 100 feet) tall. It has dark gray, ridged bark and elliptical leaves. 
-
-                                            </td>
-                                         </tr>
-                                         <tr>
-                                         <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                            American Elm
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               $39.00
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                               14 pounds
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                               7
-                                            </td>
-                                            <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                            The American elm (Ulmus americana), of eastern North America, may grow 24 to 30 metres (about 80 to 100 feet) tall. It has dark gray, ridged bark and elliptical leaves. 
-
-                                            </td>
-                                         </tr>
+                                       
+                                       
                                       </tbody>
                                    </table>
                                 </div>
@@ -463,7 +480,7 @@ Last reading from 10/6/2022 11:41 AM</h1>
                                    </div>
                                    <div class="flex-1 min-w-0">
                                       <p class="text-sm font-medium text-gray-900 truncate">
-                                      willow tree
+                                      { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["NearbyTrees"][0]} 
                                       </p>
                                       {/* <p class="text-sm text-gray-500 truncate">
                                          <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="17727a767e7b57607e7973646372653974787a">[email&#160;protected]</a>
@@ -479,7 +496,8 @@ Last reading from 10/6/2022 11:41 AM</h1>
                                    </div>
                                    <div class="flex-1 min-w-0">
                                       <p class="text-sm font-medium text-gray-900 truncate">
-                                      willow tree                                      </p>
+                                      { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["NearbyTrees"][1]} 
+                                      </p>
                                       {/* <p class="text-sm text-gray-500 truncate">
                                          <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d4b1b9b5bdb894a3bdbab0a7a0b1a6fab7bbb9">[email&#160;protected]</a>
                                       </p> */}
@@ -494,7 +512,8 @@ Last reading from 10/6/2022 11:41 AM</h1>
                                    </div>
                                    <div class="flex-1 min-w-0">
                                       <p class="text-sm font-medium text-gray-900 truncate">
-                                      willow tree                                      </p>
+                                      { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["NearbyTrees"][2]} 
+                                      </p>
                                       {/* <p class="text-sm text-gray-500 truncate">
                                          <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="57323a363e3b17203e3933242332257934383a">[email&#160;protected]</a>
                                       </p> */}
@@ -509,7 +528,8 @@ Last reading from 10/6/2022 11:41 AM</h1>
                                    </div>
                                    <div class="flex-1 min-w-0">
                                       <p class="text-sm font-medium text-gray-900 truncate">
-                                      willow tree                                      </p>
+                                      { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["NearbyTrees"][3]} 
+                                       </p>
                                       {/* <p class="text-sm text-gray-500 truncate">
                                          <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="284d45494144685f41464c5b5c4d5a064b4745">[email&#160;protected]</a>
                                       </p> */}
@@ -524,7 +544,8 @@ Last reading from 10/6/2022 11:41 AM</h1>
                                    </div>
                                    <div class="flex-1 min-w-0">
                                       <p class="text-sm font-medium text-gray-900 truncate">
-                                      willow tree                                      </p>
+                                      { teamList && teamList.length > 0 && teamList[0] ["deviceReading2"]["NearbyTrees"][1]} 
+                                      </p>
                                       {/* <p class="text-sm text-gray-500 truncate">
                                          <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2c7cfc3cbcee2d5cbccc6d1d6c7d08cc1cdcf">[email&#160;protected]</a>
                                       </p> */}
